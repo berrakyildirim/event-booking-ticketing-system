@@ -8,6 +8,8 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    // Ask the server to clear the HttpOnly cookie — JS cannot delete it directly.
+    // Only after the server responds do we clear local auth state and redirect.
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     setUser(null);
     router.push('/login');
@@ -21,9 +23,13 @@ export default function Navbar() {
       <Link href="/" className="text-gray-300 hover:text-white text-sm transition">
         Events
       </Link>
+
+      {/* Spacer: pushes auth-related nav items to the right */}
       <div className="flex-1" />
+
       {user ? (
         <>
+          {/* Show role-specific navigation: attendees see their bookings, organisers see their events */}
           {user.role === 'ATTENDEE' && (
             <Link href="/my-bookings" className="text-gray-300 hover:text-white text-sm transition">
               My Bookings

@@ -14,6 +14,8 @@ export default function EditEventPage() {
     title: '', description: '', date: '', capacity: '', categoryId: '',
   });
   const [categories, setCategories] = useState([]);
+  // Two separate loading flags: `pageLoading` hides the form while the existing event data
+  // is being fetched; `submitLoading` disables the submit button during the PUT request.
   const [pageLoading, setPageLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState('');
@@ -81,6 +83,8 @@ export default function EditEventPage() {
 
     setSubmitLoading(true);
     try {
+      // Normalise values before sending: trim strings, parse capacity to int,
+      // and convert the datetime-local string to a full ISO 8601 timestamp.
       const res = await fetch(`/api/events/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

@@ -39,6 +39,8 @@ export default function OrganiserEventsPage() {
   const handleDelete = async (eventId, eventTitle) => {
     if (!window.confirm(`Delete "${eventTitle}"? This will also cancel all bookings and cannot be undone.`)) return;
 
+    // Track the specific event being deleted (not just a boolean) so only its row
+    // shows a loading spinner while other rows remain interactive.
     setDeletingId(eventId);
     try {
       const res = await fetch(`/api/events/${eventId}`, {
@@ -46,6 +48,7 @@ export default function OrganiserEventsPage() {
         credentials: 'include',
       });
       if (res.ok) {
+        // Remove the deleted event from local state to avoid a refetch
         setEvents((prev) => prev.filter((e) => e.id !== eventId));
       } else {
         const data = await res.json();
@@ -105,7 +108,10 @@ function EventRow({ event, onDelete, deleting }) {
     month: 'short',
     year: 'numeric',
   });
+
+  // `_count.bookings` is Prisma's aggregate syntax for counting related Booking records
   const booked = event._count.bookings;
+  // Derive remaining spots rather than storing it — keeps data consistent with the DB
   const remaining = event.capacity - booked;
 
   return (

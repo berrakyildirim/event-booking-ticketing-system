@@ -31,6 +31,8 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
+      // `credentials: 'include'` ensures the browser stores the HttpOnly cookie
+      // returned by the login endpoint, which authenticates future requests.
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -44,6 +46,7 @@ export default function LoginPage() {
         return;
       }
 
+      // Update global auth state, then route to the appropriate home screen for the role
       setUser(data.user);
       router.push(data.user.role === 'ORGANISER' ? '/organiser/events' : '/');
     } catch {
@@ -53,6 +56,8 @@ export default function LoginPage() {
     }
   };
 
+  // Render nothing while auth state is loading to avoid a flash of the login form
+  // before the redirect (triggered by the useEffect above) has a chance to fire.
   if (authLoading) return null;
 
   return (

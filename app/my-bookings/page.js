@@ -12,7 +12,9 @@ export default function MyBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Redirect unauthenticated users or organisers away from this page
+  // Redirect unauthenticated users or organisers away from this page.
+  // Kept in a separate effect from the data fetch so that the redirect logic
+  // doesn't re-run every time the bookings array updates.
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -22,7 +24,9 @@ export default function MyBookingsPage() {
     }
   }, [user, authLoading, router]);
 
-  // Fetch bookings once the user is confirmed as an ATTENDEE
+  // Fetch bookings once the user is confirmed as an ATTENDEE.
+  // The guard conditions mirror the redirect above so we never call the endpoint
+  // for an unauthenticated session or for an organiser (who has no bookings).
   useEffect(() => {
     if (authLoading || !user || user.role !== 'ATTENDEE') return;
 

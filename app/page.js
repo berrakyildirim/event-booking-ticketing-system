@@ -55,6 +55,9 @@ export default function HomePage() {
   }, [search, selectedCategory, page]);
 
   const handleCategoryClick = (categoryId) => {
+    // Toggle behaviour: clicking the already-active category clears the filter;
+    // clicking a different one selects it. Reset to page 1 to avoid landing on
+    // a non-existent page when the result count changes.
     setSelectedCategory((prev) => (prev === categoryId ? '' : categoryId));
     setPage(1);
   };

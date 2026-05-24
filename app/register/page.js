@@ -31,6 +31,7 @@ export default function RegisterPage() {
       return;
     }
 
+    // Client-side length check mirrors the server-side validation for faster feedback
     if (password.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
@@ -38,6 +39,8 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
+      // `credentials: 'include'` ensures the browser stores the HttpOnly cookie
+      // set by the register endpoint so the user is immediately authenticated.
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,6 +54,7 @@ export default function RegisterPage() {
         return;
       }
 
+      // Update global auth state, then route to the appropriate home screen for the role
       setUser(data.user);
       router.push(data.user.role === 'ORGANISER' ? '/organiser/events' : '/');
     } catch {
@@ -60,6 +64,8 @@ export default function RegisterPage() {
     }
   };
 
+  // Render nothing while auth state is loading to avoid a flash of the register form
+  // before the redirect (triggered by the useEffect above) has a chance to fire.
   if (authLoading) return null;
 
   return (

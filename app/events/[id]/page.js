@@ -35,10 +35,13 @@ export default function EventDetailPage() {
       });
   }, [id]);
 
-  // Check if the authenticated attendee has already booked this event
+  // Check if the authenticated attendee has already booked this event.
+  // We skip this fetch entirely for organisers because they can never book events.
   useEffect(() => {
     if (authLoading || user?.role !== 'ATTENDEE') return;
 
+    // Re-use the existing my-bookings endpoint and search locally rather than
+    // adding a dedicated per-event booking-status endpoint.
     fetch('/api/my-bookings', { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => {
@@ -156,6 +159,14 @@ export default function EventDetailPage() {
             </div>
           )}
 
+          {/*
+            Booking CTA rendering priority:
+            1. Auth still loading  → render nothing (avoid flicker)
+            2. Not logged in       → prompt to sign in
+            3. User is ORGANISER   → informational note (organisers can't book)
+            4. Already booked      → disabled confirmation button
+            5. Default             → active Book Ticket button
+          */}
           {authLoading ? null : !user ? (
             <div className="text-center">
               <p className="text-gray-500 text-sm mb-3">Sign in to book a ticket for this event.</p>

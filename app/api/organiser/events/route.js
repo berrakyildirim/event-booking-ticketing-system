@@ -16,12 +16,14 @@ export async function GET(request) {
   }
 
   const events = await prisma.event.findMany({
+    // Scope the query to only the events owned by the authenticated organiser
     where: { organiserId: user.id },
     include: {
       category: { select: { id: true, name: true } },
+      // `_count.bookings` lets the client show "X booked / Y remaining" without a separate query
       _count: { select: { bookings: true } },
     },
-    orderBy: { date: "asc" },
+    orderBy: { date: "asc" }, // Chronological order so upcoming events appear first
   });
 
   return NextResponse.json({ events });

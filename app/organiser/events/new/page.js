@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import EventForm from '@/components/EventForm';
 
+// Initial (empty) form state defined outside the component to avoid
+// recreating the object on every render and to make resets easy.
 const EMPTY = { title: '', description: '', date: '', capacity: '', categoryId: '' };
 
 export default function NewEventPage() {
@@ -52,6 +54,8 @@ export default function NewEventPage() {
 
     setLoading(true);
     try {
+      // Normalise values before sending: trim strings, parse capacity to int,
+      // and convert the datetime-local string to a full ISO 8601 timestamp.
       const res = await fetch('/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

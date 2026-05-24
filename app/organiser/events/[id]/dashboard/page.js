@@ -41,6 +41,8 @@ export default function EventDashboardPage() {
 
   if (authLoading || !user) return null;
 
+  // Compute formattedDate only after `data` is available to avoid calling
+  // new Date(undefined) and producing an invalid date string.
   const formattedDate = data
     ? new Date(data.event.date).toLocaleDateString('en-GB', {
         weekday: 'long',
@@ -118,6 +120,11 @@ export default function EventDashboardPage() {
   );
 }
 
+/**
+ * Displays a single numeric stat with a label.
+ * `highlight` applies a blue accent border and colour to visually emphasise
+ * the most important metric (Tickets Sold) among the three stat cards.
+ */
 function StatCard({ label, value, highlight }) {
   return (
     <div className={`card text-center ${highlight ? 'border-2 border-blue-200 bg-blue-50' : ''}`}>

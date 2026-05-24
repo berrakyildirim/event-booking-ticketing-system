@@ -1,8 +1,21 @@
 import React from 'react';
 
+/**
+ * Reusable controlled form for creating and editing events.
+ *
+ * Props:
+ *   values      — { title, description, date, capacity, categoryId } — current field values
+ *   onChange    — (field, value) => void — called when any field changes; the caller owns state
+ *   categories  — array of { id, name } — options for the category dropdown
+ *   loading     — boolean — disables the submit button while a request is in flight
+ *   error       — string  — validation or server error message to display above the form
+ *   onSubmit    — form submit handler
+ *   submitLabel — string  — button label, e.g. "Create Event" or "Save Changes"
+ */
 export default function EventForm({ values, onChange, categories, loading, error, onSubmit, submitLabel }) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      {/* Display a server-side or validation error at the top of the form */}
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
           {error}
@@ -33,6 +46,7 @@ export default function EventForm({ values, onChange, categories, loading, error
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Date &amp; Time</label>
+        {/* datetime-local input gives both date and time in a single native picker */}
         <input
           type="datetime-local"
           value={values.date}
@@ -43,6 +57,7 @@ export default function EventForm({ values, onChange, categories, loading, error
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+        {/* Number input value is always a string; the parent converts it with parseInt on submit */}
         <input
           type="number"
           value={values.capacity}
@@ -69,6 +84,7 @@ export default function EventForm({ values, onChange, categories, loading, error
         </select>
       </div>
 
+      {/* Disabled during submission to prevent duplicate requests */}
       <button
         type="submit"
         disabled={loading}
