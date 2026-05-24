@@ -1,3 +1,4 @@
+// Adapted from: Claude AI assistance
 'use client'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
